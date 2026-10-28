@@ -9,6 +9,8 @@ import { createXai } from "@ai-sdk/xai"
 import type { LanguageModel } from "ai"
 
 import { getSetting, getSettingSource } from "@/lib/config"
+import { agentContext } from "@/lib/ollama"
+import { prepareOllamaRequest } from "@/lib/providers/ollama-request"
 import {
   formatModelSpec,
   getProviderMeta,
@@ -107,6 +109,11 @@ export function createModel(spec: string): LanguageModel {
         baseURL: baseUrl || meta.defaultBaseUrl,
         apiKey: apiKey || undefined,
         includeUsage: true,
+        supportsMultiPartToolContent: provider === "ollama",
+        ...(provider === "ollama" && {
+          transformRequestBody: (args: Record<string, unknown>) =>
+            prepareOllamaRequest(args, agentContext()),
+        }),
       }).chatModel(model)
   }
 }

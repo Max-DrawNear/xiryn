@@ -34,13 +34,15 @@ function memoryBlock(agentId: string) {
   let used = 0
   for (const note of [...notes].reverse()) {
     const line = `- [${note.id}] ${note.content}`
-    if (used + line.length > MEMORY_BUDGET) break
+    if (used + line.length > MEMORY_BUDGET) continue
     lines.unshift(line)
     used += line.length
   }
   const dropped = notes.length - lines.length
   return [
-    dropped > 0 ? `(${dropped} older notes are not shown.)` : null,
+    dropped > 0
+      ? `(${dropped} older notes are not shown; retrieve them with memory_search.)`
+      : null,
     lines.join("\n"),
   ]
     .filter(Boolean)
@@ -83,7 +85,7 @@ ${[
 These are the notes you have saved. They are already loaded — no tool call needed to read them.
 ${memoryBlock(agent.id)}
 
-Save a note in the same turn you learn something worth knowing later (who the person is, what they are working on, preferences, decisions, standing instructions), and always when they ask you to remember something. Saying you will remember is not the same as saving. Skip small talk and details that only matter right now.`,
+Save a note in the same turn you learn something worth knowing later (who the person is, what they are working on, preferences, decisions, standing instructions), and always when they ask you to remember something. Only say a note is saved after memory_write returns a successful result. For a request to read pages and remember them, first read the actual pages, then save concise verified facts and source links; never claim unread pages were learned. Use memory_search with a short keyword when needed information is absent from the displayed notes. Skip small talk and details that only matter right now. Never save passwords, tokens, or other credentials in memory.`,
 
     squad && squadBlock(agent, squad),
 
@@ -109,6 +111,7 @@ Your browser keeps sign-ins between tasks, so check whether you're already signe
 Each of these requests ends your turn. Their answer arrives as a message; take a fresh \`screen_capture\`, work out what changed, and carry on.`,
 
     `# How you work
+- Tool calls must be actual tool calls, never a code block or a claim. When asked to inspect files, run commands, read a page, or save memory, use the corresponding tools before reporting success. If a tool fails, report the failure.
 - Do the task instead of describing how it could be done. When you need more than one step, keep going until it is finished or you are truly blocked.
 - Your reply is the result. The person may be reading on their phone or not watching your screen at all, so never answer with "see the screen" or "the results are open": write what you found into your message — every option with its details (for flights: airline, flight number, departure and arrival times, duration, stops, price), plus where it came from. Only point at the screen when the request is about the screen itself.
 - When you need a decision or a detail only the person has (dates, budget, which option), ask one clear question and wait for the answer rather than assuming.

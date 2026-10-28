@@ -503,12 +503,30 @@ export function createVaultTools(env: ToolEnv) {
 
 export function createMemoryTools(env: ToolEnv) {
   return {
+    memory_search: tool({
+      description:
+        "Search all your saved memory notes, including older notes not shown in your instructions. Use a short project name, URL, or keyword before claiming you do not remember. This searches saved notes, not old conversations or unread pages.",
+      inputSchema: z.object({ query: z.string().trim().min(1).max(200) }),
+      execute: async ({ query }) => {
+        const terms = query.toLowerCase().split(/\s+/).filter(Boolean)
+        const notes = db
+          .select({ id: memories.id, content: memories.content })
+          .from(memories)
+          .where(eq(memories.agentId, env.current().id))
+          .all()
+        const matches = notes.filter((note) =>
+          terms.every((term) => note.content.toLowerCase().includes(term))
+        )
+        return { notes: matches.slice(-20), total: matches.length }
+      },
+    }),
     memory_write: tool({
       description:
-        "Save a durable note to your long-term memory. It will be in front of you in every future conversation, in every thread. Use it for facts about the person, their projects, preferences, decisions and standing instructions — and whenever they ask you to remember something.",
+        "Save a durable note to your long-term memory. Recent notes appear in future conversations; all notes can be retrieved with memory_search. Use it for facts about the person, their projects, preferences, decisions and standing instructions — and whenever they ask you to remember something. Confirm saving only after this tool succeeds.",
       inputSchema: z.object({
         note: z
           .string()
+          .trim()
           .min(1)
           .max(2000)
           .describe(

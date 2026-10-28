@@ -130,6 +130,10 @@ export async function ollamaStatus() {
    would: the same model, under the same name, with num_ctx set. */
 
 export function agentContext() {
+  const configured = Number(getSetting("ollama.contextLength"))
+  if (Number.isInteger(configured) && configured >= 4096 && configured <= 262144) {
+    return configured
+  }
   return os.totalmem() / 1024 ** 3 < 12 ? 16_384 : 32_768
 }
 

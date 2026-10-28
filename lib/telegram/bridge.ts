@@ -606,6 +606,7 @@ const TOOL_LABELS: Record<string, (input: Record<string, unknown>) => string> = 
   web_fetch: (i) => `read ${String(i.url ?? "").replace(/^https?:\/\//, "")}`,
   memory_write: () => "saving to memory",
   memory_forget: () => "forgetting a note",
+  memory_search: () => "searching saved memory",
   routine_create: (i) => `scheduling “${String(i.name ?? "a routine")}”`,
   routine_list: () => "checking routines",
   routine_delete: () => "removing a routine",

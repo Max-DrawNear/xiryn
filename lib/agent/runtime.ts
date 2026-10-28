@@ -606,11 +606,11 @@ export async function startTurn({
         // ends with what was found and what's left
         const lastStep = stepNumber === maxSteps - 1
         const delegated = current.id !== appliedAgentId
-        if (!delegated && !lastStep) return { messages: compacted }
         appliedAgentId = current.id
         if (delegated) activeSpec = specFor(current)
         return {
           messages: compacted,
+          // Refresh memory after every tool step, including writes and deletions.
           // After a delegation the next step runs as the new agent, on its model
           ...(delegated && { model: createModel(specFor(current)) }),
           instructions:

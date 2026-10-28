@@ -19,6 +19,8 @@ type SettingDef = {
 const integrationSettings = {
   "model.default": { env: "XIRYN_DEFAULT_MODEL" },
   "agent.maxSteps": { env: "XIRYN_MAX_STEPS", fallback: "40" },
+  // Optional local-model context target; unset keeps the hardware-based default.
+  "ollama.contextLength": { env: "XIRYN_OLLAMA_CONTEXT" },
   // US dollars a month; once reached, turns on paid models wait for next month
   "usage.monthlyBudget": { env: "XIRYN_MONTHLY_BUDGET" },
   // Operating-system notifications when no Xiryn tab is open: "on" or "off"

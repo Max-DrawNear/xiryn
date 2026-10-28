@@ -99,6 +99,7 @@ const META: Record<string, Meta> = {
   },
   memory_write: { icon: BrainIcon, label: "remember", summary: (i) => str(i.note) },
   memory_forget: { icon: EraserIcon, label: "forget", summary: (i) => str(i.id) },
+  memory_search: { icon: BrainIcon, label: "recall", summary: (i) => str(i.query) },
   routine_create: {
     icon: AlarmClockIcon,
     label: "schedule",
